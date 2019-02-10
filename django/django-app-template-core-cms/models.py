@@ -52,7 +52,6 @@ class StatusModel(models.Model):
         DRAFT=_("Draft"),
         PUBLIC=_("Public"),
         REJECTED=_("Rejected"),
-        B="B"
     )
     status = models.CharField(
         max_length=10, choices=STATUSES, default=STATUSES.DRAFT, db_index=True
