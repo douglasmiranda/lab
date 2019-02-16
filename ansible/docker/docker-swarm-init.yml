@@ -1,0 +1,20 @@
+---
+# For Docker installing tasks, check: ./debian-stretch-docker-install.yml
+# Aboyt {{ ansible_facts.eth0.ipv4.address }}:
+#   You may want to inspect {{ ansible_facts }} and decide what will be the --advertise-addr
+#   you're going to use.
+# tip:
+# Create a task:
+# - debug: var=ansible_facts
+# in order to inspect your host info.
+
+
+- name: "Get docker info"
+  shell: docker info
+  register: docker_info
+  changed_when: False
+
+- name: "Create primary swarm manager"
+  # Private network ip: ansible_facts.eth1.ipv4.address
+  shell: docker swarm init --advertise-addr {{ ansible_facts.eth0.ipv4.address }}
+  when: "docker_info.stdout.find('Swarm: inactive') != -1"
