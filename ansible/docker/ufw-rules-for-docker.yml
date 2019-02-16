@@ -1,0 +1,39 @@
+---
+
+# If you need to configure ufw rules to allow your Swarm Manager:
+- name: "Configure access for Swarm Manager host"
+  ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  with_items:
+    - { rule: 'allow', port: '2376', proto: 'tcp' }
+    - { rule: 'allow', port: '2377', proto: 'tcp' }
+    - { rule: 'allow', port: '7946', proto: 'tcp' }
+    - { rule: 'allow', port: '7946', proto: 'udp' }
+    - { rule: 'allow', port: '4789', proto: 'udp' }
+  notify:
+    - "Restart ufw"
+
+# If you need to configure ufw rules to allow your Swarm Worker:
+- name: "Configure access for Swarm Worker host"
+  ufw:
+    rule: "{{ item.rule }}"
+    port: "{{ item.port }}"
+    proto: "{{ item.proto }}"
+  with_items:
+    - { rule: 'allow', port: '2376', proto: 'tcp' }
+    - { rule: 'allow', port: '7946', proto: 'tcp' }
+    - { rule: 'allow', port: '7946', proto: 'udp' }
+    - { rule: 'allow', port: '4789', proto: 'udp' }
+  notify:
+    - "Restart ufw"
+
+# Restart ufw handler:
+# - name: "Restart ufw"
+#   service:
+#     name: "ufw"
+#     state: "restarted"
+
+# Fix the Docker and UFW security flaw without disabling iptables
+# https://github.com/chaifeng/ufw-docker
