@@ -1,0 +1,12 @@
+:7777 {
+    status 200 /
+}
+
+localhost:80 {
+    root /var/www
+    ext .html
+    log stdout
+    errors stdout
+    gzip
+    browse
+}
