@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  myapp:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      # args:
+      #   UID: ${UID}
+    image: docker-volume-share-example
+    volumes:
+      # Project code
+      - ./code:/myapp/code
+    command:
+      - sleep
+      - "9000"
