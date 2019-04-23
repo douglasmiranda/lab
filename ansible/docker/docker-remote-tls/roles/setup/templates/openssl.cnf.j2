@@ -1,0 +1,11 @@
+[ req ]
+prompt                  = no
+distinguished_name      = server_distinguished_name
+
+[ server_distinguished_name ]
+commonName              = {{ ansible_fqdn }}
+stateOrProvinceName     = {{ cert_state }}
+countryName             = {{ cert_country }}
+emailAddress            = {{ cert_email }}
+organizationName        = {{ cert_org }}
+organizationalUnitName  = {{ cert_ou }}

@@ -1,0 +1,56 @@
+---
+
+- local_action: "stat path=./DOCKER-CERTS/"
+  become: false
+  register: docker_certs_dir
+
+# certs.yml contain local tasks that will generate ca, hosts and client keys and certificates
+# for docker usage with tls
+# so we will only include in case DOCKER-CERTS/ doesn't exist
+# DOCKER-CERTS/: it's the directory created to store all the keys and certificates locally
+- include: certs.yml
+  when: docker_certs_dir.stat.exists == false
+
+- name: "Create certificates directory"
+  file:
+    path: "/var/docker/certs"
+    state: directory
+    recurse: yes
+
+- name: "Put CA public key"
+  copy:
+    src: "DOCKER-CERTS/ca/ca.pem"
+    dest: "/var/docker/certs/ca.pem"
+    mode: 0444
+
+- name: "Put server private key"
+  copy:
+    src: "DOCKER-CERTS/servers/{{ inventory_hostname }}/key.pem"
+    dest: "/var/docker/certs/serverkey.pem"
+    mode: 0400
+
+- name: "Put server certificate"
+  copy:
+    src: "DOCKER-CERTS/servers/{{ inventory_hostname }}/cert.pem"
+    dest: "/var/docker/certs/servercert.pem"
+    mode: 0444
+
+- name: "Create docker config directory"
+  file:
+    path: "/etc/systemd/system/docker.service.d"
+    state: directory
+    recurse: yes
+
+- name: "Copy Docker config"
+  template:
+    src: "docker.conf.j2"
+    dest: "/etc/systemd/system/docker.service.d/docker.conf"
+
+- name: "Reload systemctl daemons"
+  shell: "systemctl daemon-reload"
+
+- name: "Restart Docker service"
+  service:
+    name: docker
+    state: restarted
+    enabled: yes

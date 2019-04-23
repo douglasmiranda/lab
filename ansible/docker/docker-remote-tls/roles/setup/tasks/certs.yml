@@ -1,0 +1,100 @@
+---
+
+# Local directories creation
+- name: "LOCAL: Create certificates base directories"
+  file:
+    path: "{{ item }}"
+    state: "directory"
+    recurse: yes
+  loop:
+    - "DOCKER-CERTS"
+    - "DOCKER-CERTS/ca"
+    - "DOCKER-CERTS/servers"
+    - "DOCKER-CERTS/client"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Create hosts certificates directories (DOCKER-CERTS/servers/*)"
+  file:
+    path: "DOCKER-CERTS/servers/{{ item }}"
+    state: "directory"
+    recurse: yes
+  loop: "{{ groups['all'] }}"
+  delegate_to: "localhost"
+  become: false
+
+# CA files generation
+- name: "LOCAL: Create openssl configuration"
+  template:
+    src: "openssl.cnf.j2"
+    dest: "DOCKER-CERTS/ca/openssl-ca.cnf"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate CA private key"
+  shell: "openssl genrsa -out DOCKER-CERTS/ca/key.pem 4096"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate CA public key"
+  shell: "openssl req -config DOCKER-CERTS/ca/openssl-ca.cnf -new -x509 -days 1825 -sha256 -key DOCKER-CERTS/ca/key.pem -out DOCKER-CERTS/ca/ca.pem"
+  delegate_to: "localhost"
+  become: false
+
+# Hosts private keys and certs generation
+- name: "LOCAL: Generate private key for each host"
+  shell: "openssl genrsa -out DOCKER-CERTS/servers/{{ item }}/key.pem 4096"
+  loop: "{{ groups['all'] }}"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate certificate signing request (CSR) for each host"
+  shell: 'openssl req -subj "/CN={{ ansible_hostname }}" -sha256 -new -key DOCKER-CERTS/servers/{{ item }}/key.pem -out DOCKER-CERTS/servers/{{ item }}/server.csr'
+  loop: "{{ groups['all'] }}"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate extfile.cnf containing allowed ips"
+  copy:
+    # This is important!
+    # In subjectAltName you will allow access to this server
+    # here we are allowing the following IPS IP:0.0.0.0,IP:127.0.0.1,IP:{{ ansible_host }}
+    # that is, local access and remote access using the {{ ansible_host }} ip.
+    content: "subjectAltName = IP:0.0.0.0,IP:127.0.0.1,IP:{{ ansible_host }}"
+    # TODO: echo extendedKeyUsage = serverAuth >> extfile.cnf
+    dest: DOCKER-CERTS/servers/{{ item }}/extfile.cnf
+  loop: "{{ groups['all'] }}"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate certificate for each host"
+  shell: "openssl x509 -req -days 1825 -sha256 -in DOCKER-CERTS/servers/{{ item }}/server.csr -CA DOCKER-CERTS/ca/ca.pem -CAkey DOCKER-CERTS/ca/key.pem -CAcreateserial -out DOCKER-CERTS/servers/{{ item }}/cert.pem -extfile DOCKER-CERTS/servers/{{ item }}/extfile.cnf"
+  loop: "{{ groups['all'] }}"
+  delegate_to: "localhost"
+  become: false
+
+# Now we will generate client keys so you can connect to your secure docker host using tls
+# Client certificates usage:
+# cd DOCKER-CERTS/client/
+# docker --tlsverify --tlscacert=../ca/ca.pem --tlscert=cert.pem --tlskey=key.pem -H=REPLACE-WITH-DOCKER-HOST-IP:2376 version
+- name: "LOCAL: Generate client private key"
+  shell: "openssl genrsa -out DOCKER-CERTS/client/key.pem 4096"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate certificate signing request (CSR) for client"
+  shell: 'openssl req -subj "/CN=client-certificate" -new -key DOCKER-CERTS/client/key.pem -out DOCKER-CERTS/client/client.csr'
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate extfile.cnf for client certificate"
+  copy:
+    content: "extendedKeyUsage = serverAuth,clientAuth"
+    dest: "DOCKER-CERTS/client/extfile.cnf"
+  delegate_to: "localhost"
+  become: false
+
+- name: "LOCAL: Generate certificate for client"
+  shell: "openssl x509 -req -days 365 -sha256 -in DOCKER-CERTS/client/client.csr -CA DOCKER-CERTS/ca/ca.pem -CAkey DOCKER-CERTS/ca/key.pem -CAcreateserial -out DOCKER-CERTS/client/cert.pem -extfile DOCKER-CERTS/client/extfile.cnf"
+  delegate_to: "localhost"
+  become: false

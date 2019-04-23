@@ -1,0 +1,14 @@
+---
+# This playbook sets up whole stack.
+
+- name: "Configurations to 'example_docker' host"
+  hosts: "example_docker"
+  become: yes
+  roles:
+    - setup
+  vars:
+    - cert_email: douglascoding@gmail.com
+    - cert_state: MT
+    - cert_country: BR
+    - cert_org: DougCompany
+    - cert_ou: DougCompany
