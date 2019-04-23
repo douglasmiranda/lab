@@ -8,9 +8,9 @@
 
 TODO: I'm going to provide a simplified version using SSH to secure the remote connection.
 
-For configuration Management I'm using [Ansible](https://www.ansible.com/).
+For configuration management, I'm using [Ansible](https://www.ansible.com/).
 
-This tool can ssh into your newly created server instance, install and configure the packages you desire. Of course it can do much more and this is just a simplification.
+This tool can ssh into your newly created server instance, install and configure the packages you desire. Of course, it can do much more and this is just a simplification.
 
 - [Ansible Use Cases](https://www.ansible.com/use-cases)
 - [Learn Ansible](https://www.ansible.com/resources/get-started)
@@ -27,7 +27,7 @@ And yes, Ansible can provision infrastructure as well.
 - Install unattended-upgrades (gotta have those automatic updates xD)
 - Install and configure Docker + secure remote connection with TLS
 
-If you prefer to use `ufw` as firewall:
+If you prefer to use `ufw` as a firewall:
 
 > https://github.com/douglasmiranda/lab/blob/master/ansible/ufw-basics.yml
 
@@ -43,7 +43,7 @@ https://docs.ansible.com/ansible/latest/cli/ansible-vault.html
 
 ---
 
-First you need to provide your information:
+First, you need to provide your information:
 
 - site.yml
 - hosts.yml
@@ -51,7 +51,7 @@ First you need to provide your information:
 
 Initial setup with root password (we'll execute tasks with initial-setup tag; basic deploy user creation)
 
-First time we'll only be creating our deploy user and making sure we can log in with our ssh-key as the new user.
+First command will only create our deploy user and making sure we can log in with our ssh-key as the new user.
 
 ```bash
 ansible-playbook site.yml -i hosts.yml --ask-vault-pass -e ansible_user=root --tags=initial-setup
