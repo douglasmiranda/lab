@@ -23,7 +23,7 @@ resource "digitalocean_droplet" "remote_docker_example" {
   ssh_keys = ["${data.digitalocean_ssh_key.me.fingerprint}"]
 }
 
-resource "digitalocean_firewall" "web" {
+resource "digitalocean_firewall" "remote_docker_example" {
   name = "ssh-docker-http-https"
 
   droplet_ids = ["${digitalocean_droplet.remote_docker_example.id}"]
