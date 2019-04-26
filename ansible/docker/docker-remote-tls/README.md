@@ -72,3 +72,5 @@ make ansible-initial-setup-as-root
 
 make ansible-setup-as-deploy-user
 ```
+
+**NOTE:** You will notice that a directory called DOCKER-CERTS will be created this folder (docker-remote-tls/DOCKER-CERTS) containing the copy of server certs, client and CA.
