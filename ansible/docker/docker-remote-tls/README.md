@@ -1,5 +1,17 @@
 # Ansible Playbook - Remote Docker with TLS
 
+**NOTE:** Since Docker 18.09 we're able to securely connect to a Docker daemon using SSH.
+
+> https://docs.docker.com/engine/reference/commandline/dockerd/ (under "Daemon socket option" section)
+
+> https://medium.com/lucjuggery/docker-tips-access-the-docker-daemon-via-ssh-97cd6b44a53
+
+Go to the [pull request](https://github.com/docker/cli/pull/1014) and show some love using the reactions menu (top-right of the issue).
+
+It's as easy as: `docker -H ssh://me@example.com ps`
+
+---
+
 > https://docs.docker.com/engine/security/https/
 
 > [Provisioning a Digital Ocean Droplet for remote Docker access](https://github.com/douglasmiranda/lab/blob/master/terraform/digital-ocean-droplet-remote-docker-example.tf)
