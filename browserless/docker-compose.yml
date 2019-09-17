@@ -1,0 +1,35 @@
+version: "3.7"
+
+# curl -X POST \
+#       http://localhost:3000/screenshot \
+#       -H 'Cache-Control: no-cache' \
+#       -H 'Content-Type: application/json' \
+#       --output test.jpg \
+#       -d '{
+#       "url": "https://google.com/",
+#       "options": {
+#         "fullPage": true,
+#         "type": "jpeg",
+#         "quality": 60
+#       },
+#       "gotoOptions": {
+#           "waitUntil": "networkidle0"
+#       }
+#     }'
+
+services:
+  chrome:
+    image: browserless/chrome:1-chrome-stable
+    ports:
+      - "3000:3000"
+    shm_size: 500mb
+    environment:
+      # https://docs.browserless.io/docs/docker.html
+      ENABLE_DEBUGGER: "false"
+
+      WORKSPACE_DELETE_EXPIRED: "true"
+      WORKSPACE_EXPIRE_DAYS: 7
+
+      # Restart automatically when CPU or Memory usage
+      # are above 100% for a period of time (by default 5 minutes).
+      EXIT_ON_HEALTH_FAILURE: "true"
