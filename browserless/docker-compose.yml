@@ -17,6 +17,23 @@ version: "3.7"
 #       }
 #     }'
 
+# Python
+# >>> import requests
+# >>> post_data = {
+# >>>     "url": "https://google.com/",
+# >>>     "options": {"fullPage": True, "type": "jpeg", "quality": 60},
+# >>>     "gotoOptions": {"waitUntil": "networkidle0"},
+# >>> }
+# >>>
+# >>> headers = {"Cache-Control": "no-cache", "Content-Type": "application/json"}
+# >>>
+# >>> r = requests.post("http://localhost:3000/screenshot", json=post_data, headers=headers)
+# >>> r.status_code
+# 200
+# >>>
+# >>> r.headers
+# {'X-Powered-By': 'Express', 'Content-Type': 'image/jpeg', 'Date': 'Thu, 19 Sep 2019 23:43:15 GMT', 'Connection': 'keep-alive', 'Content-Length': '16727'}
+
 services:
   chrome:
     image: browserless/chrome:1-chrome-stable
