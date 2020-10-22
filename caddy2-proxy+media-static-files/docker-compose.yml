@@ -1,0 +1,15 @@
+version: "3.7"
+
+services:
+  flask:
+    build: flask/
+    ports:
+      - "8000:8000"
+
+  caddy:
+    image: caddy:alpine
+    volumes:
+      - ./caddy:/etc/caddy
+      - ./media:/srv/media
+    ports:
+      - "80:80"

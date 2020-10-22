@@ -1,0 +1,9 @@
+localhost:80
+
+route {
+	file_server /media/* {
+		root /srv
+	}
+
+	reverse_proxy flask:8000
+}
