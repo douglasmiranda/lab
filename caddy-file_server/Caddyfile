@@ -1,0 +1,16 @@
+{$DOMAIN_NAME}
+
+route {
+	file_server /media/* {
+		root /srv
+	}
+    
+    # Cache
+    # header /media/* Cache-Control max-age=31536000
+
+    # OR:
+    # handle /media/* {
+    #     root * /srv
+    #     file_server
+    # }
+}
